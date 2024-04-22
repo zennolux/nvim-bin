@@ -42,7 +42,8 @@ pub mod configuration {
                 String::from("~/.local/share/nvim/lazy/lazy.nvim"),
             )),
             Kind::NvimConfig => self::install_nvim_config(Configuration::new(
-                String::from("https://github.com/zennolux/nvim.git"),
+                //String::from("https://github.com/zennolux/nvim.git"),
+                String::from("git@github.com:zennolux/nvim.git"),
                 String::from("~/.config/nvim"),
             )),
         }
