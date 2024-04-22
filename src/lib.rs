@@ -3,14 +3,14 @@ pub mod configuration {
     use core::panic;
     use std::{env, error::Error, process::Command};
 
-    pub fn start() -> Result<String, Box<dyn Error>> {
-        println!("Start...");
-        let installed = self::install_plugin_manager()?;
-        let cloned = self::clone_nvim_config()?;
-        Ok(format!(
-            "{}\n{}\nEnjoy your neovim journey now!",
+    pub fn start() {
+        println!("Started...");
+        let installed = self::install_plugin_manager().unwrap();
+        let cloned = self::clone_nvim_config().unwrap();
+        println!(
+            "{:?}\n{:?}\nEnjoy your neovim journey now!",
             installed, cloned
-        ))
+        );
     }
 
     fn install_plugin_manager() -> Result<String, Box<dyn Error>> {
