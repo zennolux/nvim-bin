@@ -18,7 +18,7 @@ pub mod configuration {
         fn new(git_repo: String, save_path: String) -> Self {
             let time = format!("{}", Local::now().format("%y%m%d%H%M%S"));
             let save_path = save_path.replace("~", &env::var("HOME").unwrap());
-            let bakup_path = format!("{}_bakup{}", save_path, time);
+            let bakup_path = format!("{}.bakup_{}", save_path, time);
             Self {
                 git_repo,
                 save_path,
