@@ -3,7 +3,7 @@ pub mod configuration {
     use core::panic;
     use std::{env, error::Error, process::Command};
 
-    enum Kind {
+    pub enum Kind {
         PluginManager,
         NvimConfig,
     }
@@ -45,7 +45,7 @@ pub mod configuration {
         );
     }
 
-    fn install(kind: Kind) -> Result<String, Box<dyn Error>> {
+    pub fn install(kind: Kind) -> Result<String, Box<dyn Error>> {
         match kind {
             Kind::PluginManager => self::install_plugin_manager(Configuration::new(
                 String::from("https://github.com/folke/lazy.nvim.git"),
