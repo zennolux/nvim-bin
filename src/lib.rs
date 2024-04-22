@@ -3,35 +3,70 @@ pub mod configuration {
     use core::panic;
     use std::{env, error::Error, process::Command};
 
+    enum Kind {
+        PluginManager,
+        NvimConfig,
+    }
+
+    struct Configuration {
+        git_repo: String,
+        save_path: String,
+        bakup_path: String,
+    }
+
+    impl Configuration {
+        fn new(git_repo: String, save_path: String) -> Self {
+            let time = format!("{}", Local::now().format("%y%m%d%H%M%S"));
+            let save_path = save_path.replace("~", &env::var("HOME").unwrap());
+            let bakup_path = format!("{}_bakup{}", save_path, time);
+            Self {
+                git_repo,
+                save_path,
+                bakup_path,
+            }
+        }
+
+        fn backup(&self) -> Result<(), Box<dyn Error>> {
+            Command::new("mv")
+                .arg(&self.save_path)
+                .arg(&self.bakup_path)
+                .output()?;
+            Ok(())
+        }
+    }
+
     pub fn start() {
         println!("Started...");
-        let installed = self::install_plugin_manager().unwrap();
-        let cloned = self::clone_nvim_config().unwrap();
+        let installed_plugin_manager = self::install(Kind::PluginManager).unwrap();
+        let installed_nvim_config = self::install(Kind::NvimConfig).unwrap();
         println!(
             "{:?}\n{:?}\nEnjoy your neovim journey now!",
-            installed, cloned
+            installed_plugin_manager, installed_nvim_config
         );
     }
 
-    fn install_plugin_manager() -> Result<String, Box<dyn Error>> {
-        let repo = "https://github.com/folke/lazy.nvim.git";
-        let path = format!(
-            "{}/.local/share/nvim/lazy/lazy.nvim",
-            env::var("HOME").unwrap()
-        );
-        let time = format!("{}", Local::now().format("%y%m%d%H%M%S"));
+    fn install(kind: Kind) -> Result<String, Box<dyn Error>> {
+        match kind {
+            Kind::PluginManager => self::install_plugin_manager(Configuration::new(
+                String::from("https://github.com/folke/lazy.nvim.git"),
+                String::from("~/.local/share/nvim/lazy/lazy.nvim"),
+            )),
+            Kind::NvimConfig => self::install_nvim_config(Configuration::new(
+                String::from("https://github.com/zennolux/nvim.git"),
+                String::from("~/.config/nvim"),
+            )),
+        }
+    }
 
-        Command::new("mv")
-            .arg(&path)
-            .arg(format!("{}.bakup_{}", path, time))
-            .output()?;
+    fn install_plugin_manager(conf: Configuration) -> Result<String, Box<dyn Error>> {
+        conf.backup()?;
 
         match Command::new("git")
             .arg("clone")
             .arg("--filter=blob:none")
-            .arg(repo)
+            .arg(conf.git_repo)
             .arg("--branch=stable")
-            .arg(path)
+            .arg(conf.save_path)
             .output()
         {
             Ok(res) => {
@@ -47,20 +82,13 @@ pub mod configuration {
         }
     }
 
-    fn clone_nvim_config() -> Result<String, Box<dyn Error>> {
-        let repo = "https://github.com/zennolux/nvim.git";
-        let path = format!("{}/.config/nvim", env::var("HOME").unwrap());
-        let time = format!("{}", Local::now().format("%y%m%d%H%M%S"));
-
-        Command::new("mv")
-            .arg(&path)
-            .arg(format!("{}.bakup_{}", path, time))
-            .output()?;
+    fn install_nvim_config(conf: Configuration) -> Result<String, Box<dyn Error>> {
+        conf.backup()?;
 
         match Command::new("git")
             .arg("clone")
-            .arg(repo)
-            .arg(&path)
+            .arg(conf.git_repo)
+            .arg(&conf.save_path)
             .output()
         {
             Ok(res) => {
