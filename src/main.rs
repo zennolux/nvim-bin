@@ -5,5 +5,4 @@ fn main() {
         Ok(r) => println!("{}", r),
         Err(e) => eprintln!("{}", e),
     }
-    println!("Enjoy your neovim journey now!");
 }
