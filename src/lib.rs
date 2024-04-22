@@ -35,16 +35,6 @@ pub mod configuration {
         }
     }
 
-    pub fn start() {
-        println!("Started...");
-        let installed_plugin_manager = self::install(Kind::PluginManager).unwrap();
-        let installed_nvim_config = self::install(Kind::NvimConfig).unwrap();
-        println!(
-            "{:?}\n{:?}\nEnjoy your neovim journey now!",
-            installed_plugin_manager, installed_nvim_config
-        );
-    }
-
     pub fn install(kind: Kind) -> Result<String, Box<dyn Error>> {
         match kind {
             Kind::PluginManager => self::install_plugin_manager(Configuration::new(
