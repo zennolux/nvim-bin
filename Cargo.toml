@@ -1,5 +1,5 @@
 [package]
-name = "nvim"
+name = "nvimconf"
 version = "0.1.0"
 edition = "2021"
 
